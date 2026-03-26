@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Transformation Strategy — Mining SaaS Company</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -26,6 +26,32 @@ h1,h2,h3,h4,h5 { color: var(--white); }
 .hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; margin-bottom: 1rem; background: linear-gradient(135deg, var(--white), var(--teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .hero-sub { font-size: clamp(1rem, 2vw, 1.3rem); color: var(--teal); margin-bottom: 0.5rem; }
 .hero-tags { font-size: 0.85rem; color: var(--mid); margin-bottom: 2.5rem; }
+
+/* AUTH & LOGIN OVERLAY */
+.login-overlay { position: fixed; inset: 0; background: rgba(13,13,13,0.95); backdrop-filter: blur(20px); z-index: 9999; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s ease; opacity: 1; }
+.login-overlay.hidden { opacity: 0; pointer-events: none; }
+.login-card { background: var(--card); border: 1px solid var(--teal); box-shadow: 0 20px 50px rgba(0,212,170,0.1); border-radius: 24px; padding: 3rem 2.5rem; width: 100%; max-width: 440px; text-align: center; }
+.login-logo { font-size: 1.5rem; font-weight: 800; color: var(--teal); margin-bottom: 1.5rem; letter-spacing: 1px; }
+.login-card h2 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+.login-card p { font-size: 0.9rem; color: var(--gray); margin-bottom: 2rem; }
+.login-divider { display: flex; align-items: center; margin: 2rem 0; color: var(--dim); }
+.login-divider::before, .login-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.login-divider span { padding: 0 10px; font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; }
+.manual-login { display: flex; flex-direction: column; gap: 1rem; }
+.login-input { padding: 12px 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg2); color: var(--white); font-family: 'Inter', sans-serif; font-size: 0.95rem; outline: none; transition: all 0.3s; }
+.login-input:focus { border-color: var(--teal); box-shadow: 0 0 0 2px rgba(0,212,170,0.2); }
+.login-btn { padding: 12px; border: none; border-radius: 12px; background: linear-gradient(135deg, var(--teal), #009c7a); color: var(--bg); font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; }
+.login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,212,170,0.3); }
+#g_id_onload, .g_id_signin { display: flex; justify-content: center; margin-bottom: 0.5rem; }
+
+/* TOP BAR PROFILE */
+.user-profile { display: flex; align-items: center; gap: 8px; background: rgba(0,212,170,0.06); border: 1px solid rgba(0,212,170,0.2); padding: 4px 10px; border-radius: 20px; transition: all 0.3s; }
+.user-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid var(--teal); }
+.user-name-display { font-size: 0.85rem; font-weight: 600; color: var(--white); max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nav-divider-vert { width: 1px; height: 24px; background: var(--border); margin: 0 4px; }
+.logout-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; opacity: 0.6; transition: all 0.3s; margin-left: 2px; }
+.logout-btn:hover { opacity: 1; transform: scale(1.1); }
+
 .hero-stats { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; }
 .stat { background: rgba(28,28,46,0.7); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.5rem; backdrop-filter: blur(10px); min-width: 120px; }
 .stat-val { display: block; font-size: 1.8rem; font-weight: 800; color: var(--teal); }
@@ -602,6 +628,38 @@ h1,h2,h3,h4,h5 { color: var(--white); }
 </style>
 </head>
 <body>
+<!-- LOGIN OVERLAY -->
+<div id="loginOverlay" class="login-overlay">
+  <div class="login-card">
+    <div class="login-logo">⛏ AI Strategy</div>
+    <h2>Welcome Back!</h2>
+    <p>Sign in to access the executive dashboard and your team's real-time voting system.</p>
+    
+    <!-- Google Sign-In Button Container -->
+    <div id="g_id_onload"
+         data-client_id="YOUR_GOOGLE_CLIENT_ID_HERE"
+         data-callback="handleGoogleLogin"
+         data-auto_prompt="false">
+    </div>
+    <div class="g_id_signin"
+         data-type="standard"
+         data-size="large"
+         data-theme="outline"
+         data-text="sign_in_with"
+         data-shape="rectangular"
+         data-logo_alignment="left">
+    </div>
+
+    <!-- Manual Username Fallback -->
+    <div class="login-divider"><span>OR CONTINUE IN GUEST MODE</span></div>
+    
+    <div class="manual-login">
+      <input type="text" id="manualUsername" class="login-input" placeholder="Enter your full name..." onkeypress="if(event.key === 'Enter') loginManual()">
+      <button class="login-btn" onclick="loginManual()">Enter Dashboard →</button>
+    </div>
+  </div>
+</div>
+
 <!-- TOP BAR -->
 <div class="top-bar">
   <div class="top-bar-left">
@@ -615,6 +673,14 @@ h1,h2,h3,h4,h5 { color: var(--white); }
     </div>
   </div>
   <div class="top-bar-right">
+    <!-- USER PROFILE SECTION -->
+    <div class="user-profile" id="userProfile" style="display: none;">
+      <img id="userAvatar" src="" alt="Avatar" class="user-avatar" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0xMiAxMmMyLjIxIDAgNC0xLjc5IDQtNHMtMS43OS00LTQtNC00IDEuNzktNCA0IDEuNzkgNCA0IDR6bTAgMmMtMi42NyAwLTggMS4zNC04IDR2MmgxNnYtMmMwLTIuNjYtNS4zMy00LTgtNHoiLz48L3N2Zz4='">
+      <span id="userNameDisplay" class="user-name-display">Guest</span>
+      <button class="logout-btn" onclick="logout()" title="Sign Out">🚪</button>
+    </div>
+    <div class="nav-divider-vert"></div>
+
     <select id="roleFilter" onchange="filterByRole(this.value)" class="role-select">
       <option value="all">👥 All Roles</option>
       <option value="cto">🧑‍💼 CTO / Management</option>
@@ -1481,10 +1547,67 @@ document.addEventListener('DOMContentLoaded', () => {
   renderRecommendations();
   renderTimeline();
   renderCharts();
+  
+  // Auth Check
+  checkAuth();
+
   document.addEventListener('click', e => {
     if (!e.target.closest('.search-wrap')) document.getElementById('searchResults').classList.remove('show');
   });
 });
+
+// ===== AUTHENTICATION SYSTEM =====
+function checkAuth() {
+  const name = localStorage.getItem('authName');
+  const avatar = localStorage.getItem('authAvatar');
+  
+  if (name) {
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('userProfile').style.display = 'flex';
+    document.getElementById('userNameDisplay').textContent = name;
+    if (avatar) document.getElementById('userAvatar').src = avatar;
+    
+    // Auto-fill voting name
+    saveVoterName(name);
+  } else {
+    document.getElementById('loginOverlay').classList.remove('hidden');
+    document.getElementById('userProfile').style.display = 'none';
+  }
+}
+
+function loginManual() {
+  const nameInput = document.getElementById('manualUsername');
+  const name = nameInput.value.trim();
+  if (!name) { alert('Please enter your name first'); return; }
+  
+  localStorage.setItem('authName', name);
+  localStorage.removeItem('authAvatar'); // No avatar for manual
+  checkAuth();
+}
+
+// Called automatically by Google SDK on success
+function handleGoogleLogin(response) {
+  // Decode JWT to get user info
+  const base64Url = response.credential.split('.')[1];
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+  
+  const userInfo = JSON.parse(jsonPayload);
+  
+  localStorage.setItem('authName', userInfo.name);
+  localStorage.setItem('authAvatar', userInfo.picture);
+  checkAuth();
+}
+
+function logout() {
+  localStorage.removeItem('authName');
+  localStorage.removeItem('authAvatar');
+  localStorage.removeItem('aiVoterName');
+  localStorage.removeItem('aiVotes'); // Optional: clear local votes
+  checkAuth();
+}
 
 function renderCategoryButtons() {
   document.getElementById('catButtons').innerHTML = CATEGORIES.map(cat =>

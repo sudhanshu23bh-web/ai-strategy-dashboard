@@ -13,10 +13,67 @@ document.addEventListener('DOMContentLoaded', () => {
   renderRecommendations();
   renderTimeline();
   renderCharts();
+  
+  // Auth Check
+  checkAuth();
+
   document.addEventListener('click', e => {
     if (!e.target.closest('.search-wrap')) document.getElementById('searchResults').classList.remove('show');
   });
 });
+
+// ===== AUTHENTICATION SYSTEM =====
+function checkAuth() {
+  const name = localStorage.getItem('authName');
+  const avatar = localStorage.getItem('authAvatar');
+  
+  if (name) {
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('userProfile').style.display = 'flex';
+    document.getElementById('userNameDisplay').textContent = name;
+    if (avatar) document.getElementById('userAvatar').src = avatar;
+    
+    // Auto-fill voting name
+    saveVoterName(name);
+  } else {
+    document.getElementById('loginOverlay').classList.remove('hidden');
+    document.getElementById('userProfile').style.display = 'none';
+  }
+}
+
+function loginManual() {
+  const nameInput = document.getElementById('manualUsername');
+  const name = nameInput.value.trim();
+  if (!name) { alert('Please enter your name first'); return; }
+  
+  localStorage.setItem('authName', name);
+  localStorage.removeItem('authAvatar'); // No avatar for manual
+  checkAuth();
+}
+
+// Called automatically by Google SDK on success
+function handleGoogleLogin(response) {
+  // Decode JWT to get user info
+  const base64Url = response.credential.split('.')[1];
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+  
+  const userInfo = JSON.parse(jsonPayload);
+  
+  localStorage.setItem('authName', userInfo.name);
+  localStorage.setItem('authAvatar', userInfo.picture);
+  checkAuth();
+}
+
+function logout() {
+  localStorage.removeItem('authName');
+  localStorage.removeItem('authAvatar');
+  localStorage.removeItem('aiVoterName');
+  localStorage.removeItem('aiVotes'); // Optional: clear local votes
+  checkAuth();
+}
 
 function renderCategoryButtons() {
   document.getElementById('catButtons').innerHTML = CATEGORIES.map(cat =>
