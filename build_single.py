@@ -23,7 +23,7 @@ if os.path.exists(chart_path):
 
 # Replace CDN script with inline Chart.js
 html = html.replace(
-    '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>',
+    '<script src="chart.min.js"></script>',
     f'<script>\n{chart_js}\n</script>'
 )
 
