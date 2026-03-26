@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Transformation Strategy — Mining SaaS Company</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="top-bar-left">
+    <span class="logo">⛏ AI Strategy</span>
+  </div>
+  <div class="top-bar-center">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search tools, categories, features..." oninput="handleSearch(this.value)">
+      <div class="search-results" id="searchResults"></div>
+    </div>
+  </div>
+  <div class="top-bar-right">
+    <select id="roleFilter" onchange="filterByRole(this.value)" class="role-select">
+      <option value="all">👥 All Roles</option>
+      <option value="cto">🧑‍💼 CTO / Management</option>
+      <option value="developer">👨‍💻 Developer</option>
+      <option value="engineer">👷 Field Engineer</option>
+      <option value="designer">🎨 Designer</option>
+    </select>
+    <button class="icon-btn" onclick="toggleFavorites()" title="Favorites">⭐</button>
+    <button class="icon-btn" onclick="exportPDF()" title="Download PDF">📥</button>
+    <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Toggle Theme">🌗</button>
+  </div>
+</div>
+
+<!-- HERO SECTION -->
+<header class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-badge">CONFIDENTIAL • EXECUTIVE BRIEFING</div>
+    <h1>AI Transformation Strategy</h1>
+    <p class="hero-sub">Mining SaaS Company — Complete Digital Transformation Blueprint</p>
+    <p class="hero-tags">Web Dashboards • Mobile Apps • Drone Analytics • Safety Platform • Blasting Software</p>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-val">30+</span><span class="stat-lbl">AI Tools Analyzed</span></div>
+      <div class="stat"><span class="stat-val">8</span><span class="stat-lbl">Tool Categories</span></div>
+      <div class="stat"><span class="stat-val">~30</span><span class="stat-lbl">Team Members</span></div>
+      <div class="stat"><span class="stat-val">4+</span><span class="stat-lbl">Products</span></div>
+    </div>
+  </div>
+</header>
+
+<!-- EXECUTIVE SUMMARY DASHBOARD -->
+<section class="section" id="execDashboard">
+  <h2 class="section-title"><span class="accent-bar"></span>📊 Executive Summary Dashboard</h2>
+  <p class="section-desc">Live KPIs updated from your inputs — your AI strategy at a glance</p>
+  <div class="exec-grid" id="execGrid"></div>
+</section>
+
+<!-- COMPANY OVERVIEW -->
+<section class="section" id="overview">
+  <h2 class="section-title"><span class="accent-bar"></span>Company Overview</h2>
+  <div class="cards-grid four-col">
+    <div class="product-card" style="--accent:#FF8C42"><div class="card-top"></div><h3>💥 Blasting Software</h3><p>Blast analytics, planning & performance monitoring</p></div>
+    <div class="product-card" style="--accent:#38BDF8"><div class="card-top"></div><h3>🛰 Drone Analytics</h3><p>Aerial surveying, mapping & volumetric analysis</p></div>
+    <div class="product-card" style="--accent:#FF4D6A"><div class="card-top"></div><h3>🛡 Safety Platform</h3><p>Incident tracking, compliance & real-time alerts</p></div>
+    <div class="product-card" style="--accent:#00D4AA"><div class="card-top"></div><h3>⛏ Digital Mine Platform</h3><p>Integrated mine operations & KPI dashboards</p></div>
+  </div>
+  <div class="cards-grid three-col" style="margin-top:1.5rem">
+    <div class="user-card" style="border-color:#8B5CF6"><h3>👨‍💻 IT Team</h3><p>Developers, Backend, Frontend Engineers</p></div>
+    <div class="user-card" style="border-color:#FF8C42"><h3>👷 Non-IT Team</h3><p>Mine Engineers, Field Operations</p></div>
+    <div class="user-card" style="border-color:#00D4AA"><h3>🧑‍💼 Management</h3><p>Decision Makers, Executive Leadership</p></div>
+  </div>
+</section>
+
+<!-- ROLE FILTER RESULTS -->
+<div id="roleFilterResults" class="section" style="display:none"></div>
+
+<!-- NAVIGATION CATEGORIES -->
+<section class="section" id="categories">
+  <h2 class="section-title"><span class="accent-bar"></span>AI Tool Categories — Click to Explore</h2>
+  <p class="section-desc">Click any category below to expand it. Then click individual tools for deep-dive details.</p>
+  <div class="cat-buttons" id="catButtons"></div>
+</section>
+
+<!-- DYNAMIC CONTENT AREA -->
+<div id="categoryContent"></div>
+
+<!-- COST COMPARISON CHART -->
+<section class="section" id="chartSection">
+  <h2 class="section-title"><span class="accent-bar"></span>📊 Cost Comparison Charts</h2>
+  <p class="section-desc">Visual breakdown of tool costs across categories</p>
+  <div class="charts-container">
+    <div class="chart-card"><canvas id="costChart"></canvas></div>
+    <div class="chart-card"><canvas id="categoryChart"></canvas></div>
+  </div>
+</section>
+
+<!-- WORKFLOW ARCHITECTURE -->
+<section class="section" id="workflow">
+  <h2 class="section-title"><span class="accent-bar"></span>Workflow Architecture</h2>
+  <p class="section-desc">Complete AI-Powered Product Lifecycle — How All Tools Connect</p>
+  <div class="workflow-flow" id="workflowFlow"></div>
+  <div class="integration-box">
+    <h3>🔗 Integration Flow</h3>
+    <div class="integration-grid">
+      <div><p>Idea → Uizard → Quick UI prototype</p><p>Design → Figma AI → Component library</p><p>Dev → Figma Dev Mode → CSS/tokens → React (v0)</p><p>Backend → Cursor AI → APIs → Dashboard integration</p></div>
+      <div><p>Meeting → Fireflies → Auto tasks → ClickUp</p><p>Knowledge → NotebookLM → Company brain</p><p>Communication → ChatGPT + Claude → Email responses</p><p>Reports → Canva + Gamma → Professional output</p></div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- COST ANALYSIS -->
+<section class="section" id="cost">
+  <h2 class="section-title"><span class="accent-bar"></span>Cost Analysis — 30 Users</h2>
+  <div class="cost-table-wrap" id="costTable"></div>
+  <div class="cards-grid two-col" style="margin-top:1.5rem">
+    <div class="total-card green"><h3>💰 Estimated Total Cost</h3><p class="big-num">~$2,090 — $2,500 /month</p><p>Yearly: ~$25,000 — $30,000</p><p>Per user: ~$70 — $83/month</p></div>
+    <div class="total-card purple"><h3>📈 ROI Insight</h3><p>⏱ Time Saved: 40-60% faster development</p><p>📈 Productivity: 2-3x output per developer</p><p>💰 Saves 1-2 FTE salaries/year</p><p class="big-num">5-10x ROI</p></div>
+  </div>
+</section>
+
+<!-- BUDGET CALCULATOR -->
+<section class="section" id="budgetCalc">
+  <h2 class="section-title"><span class="accent-bar"></span>🧮 Budget Calculator</h2>
+  <p class="section-desc">Adjust team size to see estimated costs</p>
+  <div class="calc-card"><label>Team Size: <strong id="teamSizeVal">30</strong> users</label>
+    <input type="range" id="teamSlider" min="5" max="100" value="30" oninput="calcBudget(this.value)" class="slider">
+    <div class="calc-results" id="calcResults"></div></div>
+</section>
+
+<!-- ROI CALCULATOR -->
+<section class="section" id="roiCalc">
+  <h2 class="section-title"><span class="accent-bar"></span>📊 ROI Calculator</h2>
+  <div class="calc-card"><div class="roi-inputs">
+    <div><label>Avg Developer Salary ($/year)</label><input type="number" id="roiSalary" value="60000" onchange="calcROI()" class="roi-input"></div>
+    <div><label>Number of Developers</label><input type="number" id="roiDevs" value="10" onchange="calcROI()" class="roi-input"></div>
+    <div><label>Productivity Boost (%)</label><input type="number" id="roiBoost" value="50" onchange="calcROI()" class="roi-input"></div>
+  </div><div id="roiResults" class="calc-results"></div></div>
+</section>
+
+<!-- TOOL COMPARISON -->
+<section class="section" id="compareMode">
+  <h2 class="section-title"><span class="accent-bar"></span>🔄 Tool Comparison</h2>
+  <p class="section-desc">Select 2-3 tools to compare side-by-side</p>
+  <div class="compare-selectors" id="compareSelectors"></div>
+  <div id="compareResult"></div>
+</section>
+
+<!-- DECISION MATRIX -->
+<section class="section" id="decisionMatrix">
+  <h2 class="section-title"><span class="accent-bar"></span>🎯 Decision Matrix</h2>
+  <div class="calc-card"><div class="matrix-weights" id="matrixWeights"></div><div id="matrixResults"></div></div>
+</section>
+
+<!-- VOTING -->
+<section class="section" id="votingSection">
+  <h2 class="section-title"><span class="accent-bar"></span>🗳️ Team Voting</h2>
+  <p class="section-desc">Enter your name and vote for tools you recommend — all votes are saved with voter names</p>
+  <div class="voter-identity" id="voterIdentity">
+    <label>👤 Your Name:</label>
+    <input type="text" id="voterName" placeholder="Enter your name..." class="roi-input" style="max-width:300px;display:inline-block" 
+      oninput="saveVoterName(this.value)" />
+    <span id="voterStatus" style="font-size:0.8rem;color:var(--dim);margin-left:8px"></span>
+  </div>
+  <div id="votingGrid"></div>
+  <div id="voteToast" class="vote-toast"></div>
+</section>
+
+<!-- WORKFLOW AUTOMATION -->
+<section class="section" id="workflowAuto">
+  <h2 class="section-title"><span class="accent-bar"></span>🔗 Workflow Automation (Zapier / n8n)</h2>
+  <p class="section-desc">"Meeting ends → Tasks created → Team notified → No manual work"</p>
+  <div id="workflowAutoContent"></div>
+</section>
+
+<!-- AI ONBOARDING -->
+<section class="section" id="aiOnboarding">
+  <h2 class="section-title"><span class="accent-bar"></span>👨‍🏫 AI Onboarding System</h2>
+  <p class="section-desc">"New engineer learns blast system in 2 hours instead of 2 weeks"</p>
+  <div id="onboardingContent"></div>
+</section>
+
+<!-- AUTO REPORTS -->
+<section class="section" id="autoReports">
+  <h2 class="section-title"><span class="accent-bar"></span>📊 Auto Reports System</h2>
+  <p class="section-desc">"Management gets weekly reports without anyone writing them"</p>
+  <div id="reportsContent"></div>
+</section>
+
+<!-- FIGMA TO CODE PIPELINE -->
+<section class="section" id="figmaCode">
+  <h2 class="section-title"><span class="accent-bar"></span>🎨 Figma → Code Pipeline</h2>
+  <p class="section-desc">Fastest design-to-code in the industry</p>
+  <div id="figmaCodeContent"></div>
+</section>
+
+<!-- DESIGN TOKEN SYNC -->
+<section class="section" id="designSync">
+  <h2 class="section-title"><span class="accent-bar"></span>🧱 Design Token Auto-Sync</h2>
+  <p class="section-desc">UI consistency across all 4 products — guaranteed</p>
+  <div id="designSyncContent"></div>
+</section>
+
+<!-- AI UI TESTING -->
+<section class="section" id="aiTesting">
+  <h2 class="section-title"><span class="accent-bar"></span>🧪 AI UI Testing</h2>
+  <p class="section-desc">Catch design bugs before deployment</p>
+  <div id="aiTestingContent"></div>
+</section>
+
+<!-- IMPLEMENTATION TIMELINE TRACKER -->
+<section class="section" id="implTimeline">
+  <h2 class="section-title"><span class="accent-bar"></span>📅 Implementation Timeline Tracker</h2>
+  <p class="section-desc">Click any phase to toggle progress • Overall completion shown at top</p>
+  <div class="impl-progress-bar" id="implProgressBar"></div>
+  <div id="implTimelineContent"></div>
+</section>
+
+<!-- BEFORE/AFTER IMPACT SIMULATOR -->
+<section class="section" id="impactSim">
+  <h2 class="section-title"><span class="accent-bar"></span>🆚 Before vs After Impact Simulator</h2>
+  <p class="section-desc">See the real difference AI tools make in your daily operations</p>
+  <div id="impactSimContent"></div>
+</section>
+
+<!-- SMART RECOMMENDATIONS ENGINE -->
+<section class="section" id="smartRec">
+  <h2 class="section-title"><span class="accent-bar"></span>🧠 Smart Recommendations Engine</h2>
+  <p class="section-desc">Answer 5 quick questions → Get your personalized tool stack</p>
+  <div class="calc-card" id="smartRecCard">
+    <div id="smartRecQuestions"></div>
+    <button class="vote-btn" style="margin-top:1.5rem;padding:12px 32px;font-size:1rem" onclick="generateSmartRec()">🚀 Generate My Recommended Stack</button>
+    <div id="smartRecResult"></div>
+  </div>
+</section>
+
+<!-- TOOL MATURITY ASSESSMENT -->
+<section class="section" id="maturityAssessment">
+  <h2 class="section-title"><span class="accent-bar"></span>🏆 Tool Maturity Assessment</h2>
+  <p class="section-desc">Rate your current vs target maturity for each AI category — interactive radar chart + gap analysis</p>
+  <div class="maturity-container">
+    <div class="maturity-radar" id="maturityRadar"></div>
+    <div class="maturity-controls" id="maturityControls"></div>
+  </div>
+  <div class="maturity-gap" id="maturityGap"></div>
+</section>
+
+<!-- INTEGRATION MAP -->
+<section class="section" id="integrationMap">
+  <h2 class="section-title"><span class="accent-bar"></span>🔗 Integration Map</h2>
+  <p class="section-desc">Click any tool to see its connections — animated data flow visualization</p>
+  <div class="intmap-container" id="intmapContainer">
+    <div class="intmap-svg-wrap" id="intmapSvgWrap"></div>
+    <div class="intmap-tooltip" id="intmapTooltip"></div>
+    <div class="intmap-instructions">
+      <p>🖱 Click any tool node to highlight its integrations</p>
+      <button class="intmap-reset-btn" onclick="resetIntMap()">🔄 Reset View</button>
+    </div>
+  </div>
+</section>
+
+<!-- SCENARIO PLANNER -->
+<section class="section" id="scenarioPlanner">
+  <h2 class="section-title"><span class="accent-bar"></span>📊 Scenario Planner (What-If Analysis)</h2>
+  <p class="section-desc">Toggle tools on/off to see cascade impact on cost, productivity, and capabilities</p>
+  <div class="scenario-container">
+    <div class="scenario-presets" id="scenarioPresets"></div>
+    <div class="scenario-tool-grid" id="scenarioToolGrid"></div>
+    <div class="scenario-impact" id="scenarioImpact"></div>
+    <div id="scenarioWarnings"></div>
+  </div>
+</section>
+
+<!-- RISK ASSESSMENT MATRIX -->
+<section class="section" id="riskAssessment">
+  <h2 class="section-title"><span class="accent-bar"></span>🎯 Risk Assessment Matrix</h2>
+  <p class="section-desc">Evaluate security, vendor lock-in, scalability, and compliance risks for each tool — weighted scoring system</p>
+  <div class="risk-container">
+    <div class="risk-weights" id="riskWeights"></div>
+    <div class="risk-grid" id="riskGrid"></div>
+    <div class="risk-summary" id="riskSummary"></div>
+  </div>
+</section>
+
+<!-- ADOPTION TRACKER -->
+<section class="section" id="adoptionTracker">
+  <h2 class="section-title"><span class="accent-bar"></span>📈 Adoption Tracker</h2>
+  <p class="section-desc">Track which teams are using which tools — monitor penetration, satisfaction, and usage frequency</p>
+  <div class="adoption-overview" id="adoptionOverview"></div>
+  <div class="adoption-grid" id="adoptionGrid"></div>
+</section>
+
+<!-- AI READINESS SCORECARD -->
+<section class="section" id="readinessScorecard">
+  <h2 class="section-title"><span class="accent-bar"></span>🏅 AI Readiness Scorecard</h2>
+  <p class="section-desc">Assess your organization's readiness for AI transformation across 6 dimensions — get actionable recommendations</p>
+  <div class="calc-card" id="readinessCard">
+    <div id="readinessQuestions"></div>
+    <div id="readinessResult"></div>
+  </div>
+</section>
+
+<!-- ACTION PLAN GENERATOR -->
+<section class="section" id="actionPlan">
+  <h2 class="section-title"><span class="accent-bar"></span>📋 Action Plan Generator</h2>
+  <p class="section-desc">Your week-by-week execution plan — ready to share with the team</p>
+  <div id="actionPlanContent"></div>
+  <div style="text-align:center;margin-top:1.5rem">
+    <button class="vote-btn" style="padding:12px 32px;font-size:1rem" onclick="exportActionPlan()">📥 Export Action Plan</button>
+  </div>
+</section>
+
+<!-- COMPETITIVE ADVANTAGE -->
+<section class="section" id="competitive">
+  <h2 class="section-title"><span class="accent-bar"></span>Why Competitors Will Fall Behind</h2>
+  <div class="cards-grid two-col">
+    <div class="compete-card red">
+      <h3>❌ Competitor Problems</h3>
+      <div class="compete-item"><strong>🐌 Slow Development</strong><p>Traditional coding without AI → 3-5x slower feature delivery</p></div>
+      <div class="compete-item"><strong>🎨 Poor UI/UX</strong><p>No design system, inconsistent UI → Users struggle with interfaces</p></div>
+      <div class="compete-item"><strong>🔇 Weak Communication</strong><p>Manual meeting notes, lost context → Knowledge scattered across tools</p></div>
+      <div class="compete-item"><strong>⚙️ No AI Integration</strong><p>No AI in development workflow → Missing competitive edge entirely</p></div>
+    </div>
+    <div class="compete-card green">
+      <h3>✅ Our Advantage</h3>
+      <div class="compete-item"><strong>🚀 Faster Delivery</strong><p>AI-assisted dev (Cursor + v0 + Copilot) → 40-60% faster feature delivery</p></div>
+      <div class="compete-item"><strong>🧠 Better Decisions</strong><p>Claude + NotebookLM + Dashboards → Data-driven, real-time insights</p></div>
+      <div class="compete-item"><strong>⚡ AI-Driven Workflows</strong><p>End-to-end AI integration → From idea to deployment with AI</p></div>
+      <div class="compete-item"><strong>🔗 Strong Integration</strong><p>All tools connected in one ecosystem → Meetings → Tasks → Knowledge → Action</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- BUSINESS IMPACT -->
+<section class="section" id="impact">
+  <h2 class="section-title"><span class="accent-bar"></span>Business Impact Summary</h2>
+  <div class="impact-grid" id="impactGrid"></div>
+</section>
+
+<!-- FINAL RECOMMENDATION -->
+<section class="section" id="recommendation">
+  <h2 class="section-title"><span class="accent-bar"></span>Final Recommendation — Complete Stack</h2>
+  <div class="rec-grid" id="recGrid"></div>
+</section>
+
+<!-- CLOSING -->
+<footer class="closing">
+  <div class="closing-glow"></div>
+  <div class="closing-content">
+    <h2>The Future Is AI-Powered</h2>
+    <blockquote>"Our core UI backbone should be Figma AI, supported by Uizard for prototyping. Cursor drives backend development, Claude provides architectural intelligence. Fireflies manages meetings, ClickUp handles tasks, and NotebookLM becomes our company brain."</blockquote>
+    <div class="closing-stats">
+      <div><span>40-60%</span><small>Faster Development</small></div>
+      <div><span>30+</span><small>AI Tools Integrated</small></div>
+      <div><span>$2,500</span><small>Monthly Investment</small></div>
+      <div><span>5-10x</span><small>Expected ROI</small></div>
+    </div>
+    <p class="closing-line">AI transformation is not optional — it's the competitive advantage that separates leaders from followers.</p>
+  </div>
+</footer>
+
+<!-- FAVORITES PANEL -->
+<div class="fav-panel" id="favPanel">
+  <div class="fav-header"><h3>⭐ Favorite Tools</h3><button class="icon-btn" onclick="toggleFavorites()">✕</button></div>
+  <div id="favList"></div>
+</div>
+
+<!-- NOTES PANEL -->
+<div class="fav-panel" id="notesPanel">
+  <div class="fav-header"><h3>📝 My Notes</h3><button class="icon-btn" onclick="toggleNotes()">✕</button></div>
+  <textarea id="notesArea" placeholder="Type your notes here... (auto-saved)" oninput="saveNotes()" style="width:100%;min-height:300px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;color:var(--white);padding:1rem;font-family:'Inter',sans-serif;font-size:0.85rem;resize:vertical;outline:none"></textarea>
+  <p style="font-size:0.75rem;color:var(--dim);margin-top:0.5rem">✅ Notes auto-saved in your browser</p>
+</div>
+
+<!-- STICKY NAV -->
+<nav class="sticky-nav" id="stickyNav">
+  <a href="#overview" title="Overview">🏢</a>
+  <a href="#categories" title="Categories">🔍</a>
+  <a href="#chartSection" title="Charts">📊</a>
+  <a href="#cost" title="Costs">💰</a>
+  <a href="#budgetCalc" title="Budget">🧮</a>
+  <a href="#compareMode" title="Compare">🔄</a>
+  <a href="#votingSection" title="Vote">🗳</a>
+  <a href="#implTimeline" title="Timeline">📅</a>
+  <a href="#impactSim" title="Simulator">🆚</a>
+  <a href="#smartRec" title="Smart Rec">🧠</a>
+  <a href="#maturityAssessment" title="Maturity">🏆</a>
+  <a href="#integrationMap" title="Integration Map">🔗</a>
+  <a href="#scenarioPlanner" title="Scenario">📊</a>
+  <a href="#riskAssessment" title="Risk">🎯</a>
+  <a href="#adoptionTracker" title="Adoption">📈</a>
+  <a href="#readinessScorecard" title="Readiness">🏅</a>
+  <a href="#impact" title="Impact">📈</a>
+  <a href="#recommendation" title="Final">🎖</a>
+  <div class="nav-divider"></div>
+  <a href="#" onclick="toggleNotes();return false" title="Notes">📝</a>
+</nav>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script src="render.js"></script>
+</body>
+</html>
