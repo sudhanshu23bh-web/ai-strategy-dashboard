@@ -299,24 +299,61 @@ function handleSearch(query) {
 }
 
 // ===== FEATURE 2: CHARTS =====
+let _chartRetryCount = 0;
 function renderCharts() {
   const ctx1 = document.getElementById('costChart');
   const ctx2 = document.getElementById('categoryChart');
-  if (!ctx1 || !ctx2) return;
-  new Chart(ctx1, { type:'bar', data:{
-    labels:['Figma','Cursor','Vercel v0','Fireflies','ClickUp','Gamma+Canva','ChatGPT+Claude','NotebookLM'],
-    datasets:[{label:'Monthly Cost (30 Users)',data:[360,600,200,300,210,100,120,200],
-      backgroundColor:['#8B5CF6','#00D4AA','#38BDF8','#FF8C42','#4ADE80','#FBBF24','#FF4D6A','#E879F9'],
-      borderRadius:6, borderSkipped:false }]
-  }, options:{ responsive:true, plugins:{legend:{labels:{color:'#BBBBCC'}},title:{display:true,text:'Monthly Tool Costs (30 Users)',color:'#FFFFFF',font:{size:14}}},
-    scales:{y:{ticks:{color:'#888899',callback:v=>'$'+v},grid:{color:'#333344'}},x:{ticks:{color:'#888899'},grid:{display:false}}} }});
-  new Chart(ctx2, { type:'doughnut', data:{
-    labels:['UI Design','Backend Dev','Frontend','Meetings','Task Mgmt','Docs/PPT','Email','Knowledge'],
-    datasets:[{data:[360,600,200,300,210,100,120,200],
-      backgroundColor:['#8B5CF6','#00D4AA','#38BDF8','#FF8C42','#4ADE80','#FBBF24','#FF4D6A','#E879F9'],
-      borderWidth:2, borderColor:'#0D0D0D'}]
-  }, options:{ responsive:true, plugins:{legend:{position:'right',labels:{color:'#BBBBCC',padding:12,font:{size:11}}},
-    title:{display:true,text:'Cost Distribution by Category',color:'#FFFFFF',font:{size:14}}} }});
+  if (!ctx1 || !ctx2) {
+    console.warn('Chart canvas elements not found');
+    return;
+  }
+
+  // Check if Chart.js is loaded
+  if (typeof Chart === 'undefined') {
+    _chartRetryCount++;
+    if (_chartRetryCount <= 10) {
+      console.warn('Chart.js not loaded yet, retrying in 500ms... (attempt ' + _chartRetryCount + ')');
+      setTimeout(renderCharts, 500);
+    } else {
+      console.error('Chart.js failed to load after 10 retries. Charts will not render.');
+      ctx1.parentElement.innerHTML = '<p style="color:#FF4D6A;text-align:center;padding:2rem;">⚠️ Chart.js failed to load. Check internet connection and refresh.</p>';
+      ctx2.parentElement.innerHTML = '<p style="color:#FF4D6A;text-align:center;padding:2rem;">⚠️ Chart.js failed to load. Check internet connection and refresh.</p>';
+    }
+    return;
+  }
+
+  try {
+    // Destroy existing charts if any (prevent "Canvas is already in use" error)
+    const existingChart1 = Chart.getChart(ctx1);
+    const existingChart2 = Chart.getChart(ctx2);
+    if (existingChart1) existingChart1.destroy();
+    if (existingChart2) existingChart2.destroy();
+
+    new Chart(ctx1, { type:'bar', data:{
+      labels:['Figma','Cursor','Vercel v0','Fireflies','ClickUp','Gamma+Canva','ChatGPT+Claude','NotebookLM'],
+      datasets:[{label:'Monthly Cost (30 Users)',data:[360,600,200,300,210,100,120,200],
+        backgroundColor:['#8B5CF6','#00D4AA','#38BDF8','#FF8C42','#4ADE80','#FBBF24','#FF4D6A','#E879F9'],
+        borderRadius:6, borderSkipped:false }]
+    }, options:{ responsive:true, maintainAspectRatio:true, plugins:{legend:{labels:{color:'#BBBBCC'}},title:{display:true,text:'Monthly Tool Costs (30 Users)',color:'#FFFFFF',font:{size:14}}},
+      scales:{y:{ticks:{color:'#888899',callback:v=>'$'+v},grid:{color:'#333344'}},x:{ticks:{color:'#888899'},grid:{display:false}}} }});
+
+    new Chart(ctx2, { type:'doughnut', data:{
+      labels:['UI Design','Backend Dev','Frontend','Meetings','Task Mgmt','Docs/PPT','Email','Knowledge'],
+      datasets:[{data:[360,600,200,300,210,100,120,200],
+        backgroundColor:['#8B5CF6','#00D4AA','#38BDF8','#FF8C42','#4ADE80','#FBBF24','#FF4D6A','#E879F9'],
+        borderWidth:2, borderColor:'#0D0D0D'}]
+    }, options:{ responsive:true, maintainAspectRatio:true, plugins:{legend:{position:'right',labels:{color:'#BBBBCC',padding:12,font:{size:11}}},
+      title:{display:true,text:'Cost Distribution by Category',color:'#FFFFFF',font:{size:14}}} }});
+
+    console.log('✅ Charts rendered successfully');
+  } catch(e) {
+    console.error('Chart rendering error:', e);
+    // Retry once on error
+    if (_chartRetryCount < 3) {
+      _chartRetryCount++;
+      setTimeout(renderCharts, 1000);
+    }
+  }
 }
 
 // ===== FEATURE 3: PDF EXPORT =====
