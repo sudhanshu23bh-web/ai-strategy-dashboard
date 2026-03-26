@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// ===== 3D LOGIN CARD EFFECT =====
+// ===== 3D DRAGGABLE LOGIN CARD EFFECT =====
 function setup3DLoginCard() {
   const overlay = document.getElementById('loginOverlay');
   const card = document.querySelector('.login-card');
@@ -31,39 +31,92 @@ function setup3DLoginCard() {
   if (!overlay || !card) return;
   
   let isDragging = false;
-  
-  overlay.addEventListener('mousemove', (e) => {
-    if (isDragging) return; // Pause tilt while grabbing
+  let currentX = 0, currentY = 0;
+  let startX = 0, startY = 0;
+  let velX = 0, velY = 0;
+
+  const updateTransform = (rotX, rotY, scale) => {
+    card.style.transform = `translate(${currentX}px, ${currentY}px) perspective(1500px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(${scale}, ${scale}, ${scale})`;
+  };
+
+  // Mouse & Touch down
+  const startDrag = (e) => {
+    // Don't drag if clicking an input or button
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
     
-    // Get mouse position relative to the middle of the card
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
+    isDragging = true;
+    card.style.transition = 'none'; // Instant movement
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    
+    startX = clientX - currentX;
+    startY = clientY - currentY;
+    
+    updateTransform(15, 0, 0.95);
+  };
 
-    // Calculate rotation angles (max 15 degrees)
-    const rotateX = (-y / (rect.height / 2)) * 10;
-    const rotateY = (x / (rect.width / 2)) * 10;
+  // Hovering and Dragging
+  const handleMove = (e) => {
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
 
-    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-  });
+    if (isDragging) {
+      const prevX = currentX;
+      const prevY = currentY;
+      
+      currentX = clientX - startX;
+      currentY = clientY - startY;
+      
+      // Calculate velocity for dynamic tilt while dragging
+      velX = currentX - prevX;
+      velY = currentY - prevY;
+      
+      // Tilt in the direction of drag
+      const rotateX = Math.max(-20, Math.min(20, -velY * 1.5));
+      const rotateY = Math.max(-20, Math.min(20, velX * 1.5));
+      
+      updateTransform(rotateX, rotateY, 0.95);
+    } else {
+      // Hover 3D Tilt
+      const rect = card.getBoundingClientRect();
+      const x = clientX - rect.left - rect.width / 2;
+      const y = clientY - rect.top - rect.height / 2;
 
-  overlay.addEventListener('mouseleave', () => {
-    if (isDragging) return;
-    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
-  });
-  
-  // Add dragging simulation
-  card.addEventListener('mousedown', () => { 
-    isDragging = true; 
-    card.style.transform = `perspective(1000px) rotateX(15deg) rotateY(0) scale3d(0.95, 0.95, 0.95)`;
-  });
-  
-  window.addEventListener('mouseup', () => { 
+      // Only apply hover tilt if mouse is over the card
+      if (Math.abs(x) < rect.width/2 && Math.abs(y) < rect.height/2) {
+        card.style.transition = 'transform 0.1s ease-out';
+        const rotateX = (-y / (rect.height / 2)) * 10;
+        const rotateY = (x / (rect.width / 2)) * 10;
+        updateTransform(rotateX, rotateY, 1.02);
+      }
+    }
+  };
+
+  const endDrag = () => {
     if (isDragging) {
       isDragging = false;
-      card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+      card.style.transition = 'transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)';
+      updateTransform(0, 0, 1);
     }
-  });
+  };
+
+  const handleLeave = () => {
+    if (!isDragging) {
+      card.style.transition = 'transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)';
+      updateTransform(0, 0, 1);
+    }
+  };
+
+  // Mouse Listeners
+  card.addEventListener('mousedown', startDrag);
+  window.addEventListener('mousemove', handleMove);
+  window.addEventListener('mouseup', endDrag);
+  card.addEventListener('mouseleave', handleLeave);
+
+  // Touch Listeners for Mobile
+  card.addEventListener('touchstart', startDrag, {passive: false});
+  window.addEventListener('touchmove', handleMove, {passive: false});
+  window.addEventListener('touchend', endDrag);
 }
 
 // ===== AUTHENTICATION SYSTEM =====
