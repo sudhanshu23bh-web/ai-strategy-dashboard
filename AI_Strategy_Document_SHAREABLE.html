@@ -221,7 +221,7 @@ h1,h2,h3,h4,h5 { color: var(--white); }
 
 /* CHARTS */
 .charts-container { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-.chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; }
+.chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; position: relative; height: 350px; }
 
 /* TIMELINE */
 .timeline { position: relative; padding-left: 40px; }
@@ -1802,7 +1802,7 @@ function renderCharts() {
       datasets:[{label:'Monthly Cost (30 Users)',data:[360,600,200,300,210,100,120,200],
         backgroundColor:['#8B5CF6','#00D4AA','#38BDF8','#FF8C42','#4ADE80','#FBBF24','#FF4D6A','#E879F9'],
         borderRadius:6, borderSkipped:false }]
-    }, options:{ responsive:true, maintainAspectRatio:true, plugins:{legend:{labels:{color:'#BBBBCC'}},title:{display:true,text:'Monthly Tool Costs (30 Users)',color:'#FFFFFF',font:{size:14}}},
+    }, options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{color:'#BBBBCC'}},title:{display:true,text:'Monthly Tool Costs (30 Users)',color:'#FFFFFF',font:{size:14}}},
       scales:{y:{ticks:{color:'#888899',callback:v=>'$'+v},grid:{color:'#333344'}},x:{ticks:{color:'#888899'},grid:{display:false}}} }});
 
     new Chart(ctx2, { type:'doughnut', data:{
@@ -1810,17 +1810,18 @@ function renderCharts() {
       datasets:[{data:[360,600,200,300,210,100,120,200],
         backgroundColor:['#8B5CF6','#00D4AA','#38BDF8','#FF8C42','#4ADE80','#FBBF24','#FF4D6A','#E879F9'],
         borderWidth:2, borderColor:'#0D0D0D'}]
-    }, options:{ responsive:true, maintainAspectRatio:true, plugins:{legend:{position:'right',labels:{color:'#BBBBCC',padding:12,font:{size:11}}},
+    }, options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right',labels:{color:'#BBBBCC',padding:12,font:{size:11}}},
       title:{display:true,text:'Cost Distribution by Category',color:'#FFFFFF',font:{size:14}}} }});
 
     console.log('✅ Charts rendered successfully');
   } catch(e) {
     console.error('Chart rendering error:', e);
+    ctx1.parentElement.innerHTML = `<p style="color:#FF4D6A;padding:1rem">Error: ${e.message}</p>`;
     // Retry once on error
-    if (_chartRetryCount < 3) {
-      _chartRetryCount++;
-      setTimeout(renderCharts, 1000);
-    }
+//    if (_chartRetryCount < 3) {
+//      _chartRetryCount++;
+//      setTimeout(renderCharts, 1000);
+//    }
   }
 }
 
