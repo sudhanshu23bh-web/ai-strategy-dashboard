@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Transformation Strategy — Mining SaaS Company</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -37,12 +36,15 @@ h1,h2,h3,h4,h5 { color: var(--white); }
 .login-divider { display: flex; align-items: center; margin: 2rem 0; color: var(--dim); }
 .login-divider::before, .login-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 .login-divider span { padding: 0 10px; font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; }
-.manual-login { display: flex; flex-direction: column; gap: 1rem; }
+
+.custom-login-form { display: flex; flex-direction: column; gap: 1.2rem; text-align: left; }
+.input-group { display: flex; flex-direction: column; gap: 0.4rem; }
+.input-group label { font-size: 0.85rem; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; }
+
 .login-input { padding: 12px 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg2); color: var(--white); font-family: 'Inter', sans-serif; font-size: 0.95rem; outline: none; transition: all 0.3s; }
 .login-input:focus { border-color: var(--teal); box-shadow: 0 0 0 2px rgba(0,212,170,0.2); }
-.login-btn { padding: 12px; border: none; border-radius: 12px; background: linear-gradient(135deg, var(--teal), #009c7a); color: var(--bg); font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; }
+.login-btn { padding: 14px; border: none; border-radius: 12px; background: linear-gradient(135deg, var(--teal), #009c7a); color: var(--bg); font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; margin-top: 0.5rem; }
 .login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,212,170,0.3); }
-#g_id_onload, .g_id_signin { display: flex; justify-content: center; margin-bottom: 0.5rem; }
 
 /* TOP BAR PROFILE */
 .user-profile { display: flex; align-items: center; gap: 8px; background: rgba(0,212,170,0.06); border: 1px solid rgba(0,212,170,0.2); padding: 4px 10px; border-radius: 20px; transition: all 0.3s; }
@@ -632,30 +634,21 @@ h1,h2,h3,h4,h5 { color: var(--white); }
 <div id="loginOverlay" class="login-overlay">
   <div class="login-card">
     <div class="login-logo">⛏ AI Strategy</div>
-    <h2>Welcome Back!</h2>
-    <p>Sign in to access the executive dashboard and your team's real-time voting system.</p>
+    <h2>Welcome to the Dashboard</h2>
+    <p>Please enter your details to access the executive overview and team voting system.</p>
     
-    <!-- Google Sign-In Button Container -->
-    <div id="g_id_onload"
-         data-client_id="YOUR_GOOGLE_CLIENT_ID_HERE"
-         data-callback="handleGoogleLogin"
-         data-auto_prompt="false">
-    </div>
-    <div class="g_id_signin"
-         data-type="standard"
-         data-size="large"
-         data-theme="outline"
-         data-text="sign_in_with"
-         data-shape="rectangular"
-         data-logo_alignment="left">
-    </div>
-
-    <!-- Manual Username Fallback -->
-    <div class="login-divider"><span>OR CONTINUE IN GUEST MODE</span></div>
-    
-    <div class="manual-login">
-      <input type="text" id="manualUsername" class="login-input" placeholder="Enter your full name..." onkeypress="if(event.key === 'Enter') loginManual()">
-      <button class="login-btn" onclick="loginManual()">Enter Dashboard →</button>
+    <div class="custom-login-form">
+      <div class="input-group">
+        <label for="userEmail">Email Address</label>
+        <input type="email" id="userEmail" class="login-input" placeholder="e.g. name@company.com" onkeypress="if(event.key === 'Enter') document.getElementById('userName').focus()">
+      </div>
+      
+      <div class="input-group">
+        <label for="userName">Full Name</label>
+        <input type="text" id="userName" class="login-input" placeholder="e.g. Rohan Sharma" onkeypress="if(event.key === 'Enter') loginCustom()">
+      </div>
+      
+      <button class="login-btn" onclick="loginCustom()">Access Dashboard →</button>
     </div>
   </div>
 </div>
@@ -1575,34 +1568,31 @@ function checkAuth() {
   }
 }
 
-function loginManual() {
-  const nameInput = document.getElementById('manualUsername');
+function loginCustom() {
+  const emailInput = document.getElementById('userEmail');
+  const nameInput = document.getElementById('userName');
+  
+  const email = emailInput.value.trim();
   const name = nameInput.value.trim();
-  if (!name) { alert('Please enter your name first'); return; }
+  
+  if (!email || !name) { 
+    alert('Please enter both Email and Name'); 
+    return; 
+  }
+  
+  // Generate a beautiful avatar based on their name initials
+  const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=00D4AA&color=fff&bold=true&rounded=true`;
   
   localStorage.setItem('authName', name);
-  localStorage.removeItem('authAvatar'); // No avatar for manual
-  checkAuth();
-}
-
-// Called automatically by Google SDK on success
-function handleGoogleLogin(response) {
-  // Decode JWT to get user info
-  const base64Url = response.credential.split('.')[1];
-  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-  const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-  }).join(''));
+  localStorage.setItem('authEmail', email);
+  localStorage.setItem('authAvatar', avatarUrl);
   
-  const userInfo = JSON.parse(jsonPayload);
-  
-  localStorage.setItem('authName', userInfo.name);
-  localStorage.setItem('authAvatar', userInfo.picture);
   checkAuth();
 }
 
 function logout() {
   localStorage.removeItem('authName');
+  localStorage.removeItem('authEmail');
   localStorage.removeItem('authAvatar');
   localStorage.removeItem('aiVoterName');
   localStorage.removeItem('aiVotes'); // Optional: clear local votes

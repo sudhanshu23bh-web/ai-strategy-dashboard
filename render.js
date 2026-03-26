@@ -41,34 +41,31 @@ function checkAuth() {
   }
 }
 
-function loginManual() {
-  const nameInput = document.getElementById('manualUsername');
+function loginCustom() {
+  const emailInput = document.getElementById('userEmail');
+  const nameInput = document.getElementById('userName');
+  
+  const email = emailInput.value.trim();
   const name = nameInput.value.trim();
-  if (!name) { alert('Please enter your name first'); return; }
+  
+  if (!email || !name) { 
+    alert('Please enter both Email and Name'); 
+    return; 
+  }
+  
+  // Generate a beautiful avatar based on their name initials
+  const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=00D4AA&color=fff&bold=true&rounded=true`;
   
   localStorage.setItem('authName', name);
-  localStorage.removeItem('authAvatar'); // No avatar for manual
-  checkAuth();
-}
-
-// Called automatically by Google SDK on success
-function handleGoogleLogin(response) {
-  // Decode JWT to get user info
-  const base64Url = response.credential.split('.')[1];
-  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-  const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-  }).join(''));
+  localStorage.setItem('authEmail', email);
+  localStorage.setItem('authAvatar', avatarUrl);
   
-  const userInfo = JSON.parse(jsonPayload);
-  
-  localStorage.setItem('authName', userInfo.name);
-  localStorage.setItem('authAvatar', userInfo.picture);
   checkAuth();
 }
 
 function logout() {
   localStorage.removeItem('authName');
+  localStorage.removeItem('authEmail');
   localStorage.removeItem('authAvatar');
   localStorage.removeItem('aiVoterName');
   localStorage.removeItem('aiVotes'); // Optional: clear local votes
