@@ -16,11 +16,55 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Auth Check
   checkAuth();
+  setup3DLoginCard(); // Initialize 3D Card Effect
 
   document.addEventListener('click', e => {
     if (!e.target.closest('.search-wrap')) document.getElementById('searchResults').classList.remove('show');
   });
 });
+
+// ===== 3D LOGIN CARD EFFECT =====
+function setup3DLoginCard() {
+  const overlay = document.getElementById('loginOverlay');
+  const card = document.querySelector('.login-card');
+  
+  if (!overlay || !card) return;
+  
+  let isDragging = false;
+  
+  overlay.addEventListener('mousemove', (e) => {
+    if (isDragging) return; // Pause tilt while grabbing
+    
+    // Get mouse position relative to the middle of the card
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+
+    // Calculate rotation angles (max 15 degrees)
+    const rotateX = (-y / (rect.height / 2)) * 10;
+    const rotateY = (x / (rect.width / 2)) * 10;
+
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+  });
+
+  overlay.addEventListener('mouseleave', () => {
+    if (isDragging) return;
+    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+  });
+  
+  // Add dragging simulation
+  card.addEventListener('mousedown', () => { 
+    isDragging = true; 
+    card.style.transform = `perspective(1000px) rotateX(15deg) rotateY(0) scale3d(0.95, 0.95, 0.95)`;
+  });
+  
+  window.addEventListener('mouseup', () => { 
+    if (isDragging) {
+      isDragging = false;
+      card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+    }
+  });
+}
 
 // ===== AUTHENTICATION SYSTEM =====
 function checkAuth() {
