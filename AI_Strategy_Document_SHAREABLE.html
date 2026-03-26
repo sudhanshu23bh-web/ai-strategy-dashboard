@@ -1916,7 +1916,11 @@ function renderTimeline() {
       desc:"Review ROI, optimize tool usage, scale successful workflows",
       tools:["All tools reviewed","Adjust licenses","Training completion"] }
   ];
-  document.getElementById('timelineContainer').innerHTML = `<div class="timeline">${phases.map(p =>
+  
+  const container = document.getElementById('timelineContainer') || document.getElementById('implTimelineContent');
+  if (!container) return;
+
+  container.innerHTML = `<div class="timeline">${phases.map(p =>
     `<div class="timeline-item" style="--tl-color:${p.color}">
       <div class="tl-phase" style="background:${p.color}20;color:${p.color}">${p.phase} — ${p.label}</div>
       <h4>${p.label}</h4>
